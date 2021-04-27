@@ -1,0 +1,46 @@
+
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 640px) {
+.login {
+	padding: 65px 0;
+}
+.login_box {
+	width: auto;
+	height: 468px;
+	background: #FFFFFF 0% 0% no-repeat padding-box;
+	box-shadow: 80px 120px 504px #00000029;
+	border-radius: 10px;
+	opacity: 1;
+	margin: 0 auto;
+	padding: 20px;
+}
+.numeric.none {
+	display: none !important;
+}
+.seeting-sec h6 {
+
+	padding-top: 15px;
+}
+td {
+	font-size: 13px;
+	padding: 14px 10px !important;
+}
+}
+/*@media (max-width:640px) {
+.navbar-brand img {
+  width: 29%;
+}
+}*/
+
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 991px) {
+
+}
+
+@media only screen 
+and (min-device-width : 992px) 
+and (max-device-width : 1024px) {
+
+}
