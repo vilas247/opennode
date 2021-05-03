@@ -39,7 +39,7 @@ if(isset($_REQUEST['authKey'])){
 		if (filter_var($email_id, FILTER_VALIDATE_EMAIL)) {
 			$conn = getConnection();
 			$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$email_id."' and validation_id='".$validation_id."'");
-			$stmt->execute();
+			$stmt->execute([$email_id,$validation_id]);
 			$stmt->setFetchMode(PDO::FETCH_ASSOC);
 			$result = $stmt->fetchAll();
 			//print_r($result[0]);exit;
@@ -78,8 +78,9 @@ if(isset($_REQUEST['authKey'])){
 						$billingAddress = $cartData['billing_address'];
 						$invoiceId = "OPENNODE".time();
 						
-						$isql = 'insert into order_payment_details(type,email_id,order_id,cart_id,total_amount,amount_paid,currency,status,params,token_validation_id) values("'.$transaction_type.'","'.$email_id.'","'.$invoiceId.'","'.$cartData['id'].'","'.$cartData['grand_total'].'","0.00","'.$currency.'","PENDING","'.base64_encode(json_encode($cartData)).'","'.$validation_id.'")';
-						$conn->exec($isql);
+						$isql = 'insert into order_payment_details(type,email_id,order_id,cart_id,total_amount,amount_paid,currency,status,params,token_validation_id) values(?,?,?,?,?,?,?,?,?,?)';
+						$stmt= $conn->prepare($isql);
+						$stmt->execute([$transaction_type, $email_id, $invoiceId,$cartData['id'],$cartData['grand_total'],"0.00",$currency,"PENDING",base64_encode(json_encode($cartData)),$validation_id]);
 						$res['status'] = true;
 						$url = BASE_URL."opennodePay.php?invoiceId=".base64_encode(json_encode($invoiceId));
 						$res['data'] = $url;
@@ -131,9 +132,9 @@ function getCartData($email_id,$cartId,$acess_token,$store_hash,$validation_id){
 		$res = curl_exec($ch);
 		curl_close($ch);
 		//print_r($res);exit;
-		$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values("'.$email_id.'","BigCommerce","checkout","'.addslashes($url).'","'.addslashes(json_encode($request)).'","'.addslashes($res).'","'.$validation_id.'")';
-		//echo $log_sql;exit;
-		$conn->exec($log_sql);
+		$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values(?,?,?,?,?,?,?)';
+		$stmt= $conn->prepare($log_sql);
+		$stmt->execute([$email_id, "BigCommerce", "checkout",addslashes($url),addslashes($request),addslashes($res),$validation_id]);
 		
 		if(!empty($res)){
 			$res = json_decode($res,true);

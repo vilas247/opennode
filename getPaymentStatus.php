@@ -16,8 +16,8 @@ if(isset($_REQUEST['authKey'])){
 	$conn = getConnection();
 	$invoiceId = json_decode(base64_decode($_REQUEST['authKey']),true);
 	if($invoiceId != ""){
-		$stmt_order_payment = $conn->prepare("select * from order_payment_details where order_id='".$invoiceId."'");
-		$stmt_order_payment->execute();
+		$stmt_order_payment = $conn->prepare("select * from order_payment_details where order_id=?");
+		$stmt_order_payment->execute([$invoiceId]);
 		$stmt_order_payment->setFetchMode(PDO::FETCH_ASSOC);
 		$result_order_payment = $stmt_order_payment->fetchAll();
 		if (isset($result_order_payment[0])) {

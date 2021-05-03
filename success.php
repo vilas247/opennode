@@ -24,8 +24,8 @@ if(isset($_REQUEST['authKey'])){
 	$validation_id = $tokenData['key'];
 	if(filter_var($email_id, FILTER_VALIDATE_EMAIL)) {
 		$conn = getConnection();
-		$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$email_id."' and validation_id='".$validation_id."'");
-		$stmt->execute();
+		$stmt = $conn->prepare("select * from opennode_token_validation where email_id=? and validation_id=?");
+		$stmt->execute([$email_id,$validation_id]);
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
 		$result = $stmt->fetchAll();
 		//print_r($result);exit;
@@ -62,8 +62,8 @@ function redirectBigcommerce($result,$email_id,$invoice_id,$validation_id){
 		$res = json_decode($res,true);
 		if(isset($res['secure_url'])){
 			
-			$invoice_stmt = $conn->prepare("select * from order_details where email_id='".$email_id."' and invoice_id='".$invoice_id."' and token_validation_id='".$validation_id."'");
-			$invoice_stmt->execute();
+			$invoice_stmt = $conn->prepare("select * from order_details where email_id=? and invoice_id=? and token_validation_id=?");
+			$invoice_stmt->execute([$email_id,$invoice_id,$validation_id]);
 			$invoice_stmt->setFetchMode(PDO::FETCH_ASSOC);
 			$invoice_result = $invoice_stmt->fetchAll();
 			if(isset($invoice_result[0])) {

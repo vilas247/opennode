@@ -6,6 +6,9 @@ require_once('config.php');
 require_once('db-config.php');
 	////$data = json_decode(file_get_contents('php://input'), true);
 	$data = $_REQUEST;
+	$fp = fopen("load.txt", "w");
+	fwrite($fp, serialize($data));
+	fclose($fp);
 
 	$jsonData = verifySignedRequest($_GET['signed_payload']);
 	/*print '<pre />';
@@ -37,8 +40,8 @@ if($jsonData != null && $jsonData != "") {
 	$store_hash = @$jsonData['store_hash'];
 	
 	$conn = getConnection();
-	$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$email."' and store_hash='".$store_hash."'");
-	$stmt->execute();
+	$stmt = $conn->prepare("select * from opennode_token_validation where email_id=? and store_hash=?");
+	$stmt->execute([$email,$store_hash]);
 	$stmt->setFetchMode(PDO::FETCH_ASSOC);
 	$result = $stmt->fetchAll();
 		

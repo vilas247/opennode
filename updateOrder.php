@@ -37,18 +37,18 @@ if(!empty($data)){
 		}
 		
 		$invoiceId = $data['order_id'];
-		$usql = 'update order_payment_details set status = "'.$status.'",amount_paid="'.$amount_paid.'",api_response="'.addslashes(json_encode($data)).'" where order_id="'.$invoiceId.'"';
-		$stmt = $conn->prepare($usql);
-		$stmt->execute();
+		$usql = 'update order_payment_details set status = ?,amount_paid=?,api_response=? where order_id=?';
+		$stmt= $conn->prepare($usql);
+		$stmt->execute([$status, $amount_paid, addslashes(json_encode($data)), $invoiceId]);
 		
-		$stmt_order_payment = $conn->prepare("select * from order_payment_details where order_id='".$invoiceId."'");
-		$stmt_order_payment->execute();
+		$stmt_order_payment = $conn->prepare("select * from order_payment_details where order_id=?");
+		$stmt_order_payment->execute([$invoiceId]);
 		$stmt_order_payment->setFetchMode(PDO::FETCH_ASSOC);
 		$result_order_payment = $stmt_order_payment->fetchAll();
 		if (isset($result_order_payment[0])) {
 			$result_order_payment = $result_order_payment[0];
-			$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$result_order_payment['email_id']."' and validation_id='".$result_order_payment['token_validation_id']."'");
-			$stmt->execute();
+			$stmt = $conn->prepare("select * from opennode_token_validation where email_id=? and validation_id=?");
+			$stmt->execute([$result_order_payment['email_id'],$result_order_payment['token_validation_id']]);
 			$stmt->setFetchMode(PDO::FETCH_ASSOC);
 			$result = $stmt->fetchAll();
 			//print_r($result[0]);exit;
@@ -56,8 +56,8 @@ if(!empty($data)){
 				$result = $result[0];
 				$acess_token = $result['acess_token'];
 				$store_hash = $result['store_hash'];
-				$invoice_stmt = $conn->prepare("select * from order_details where invoice_id='".$invoiceId."'");
-				$invoice_stmt->execute();
+				$invoice_stmt = $conn->prepare("select * from order_details where invoice_id=?");
+				$invoice_stmt->execute([$invoiceId]);
 				$invoice_stmt->setFetchMode(PDO::FETCH_ASSOC);
 				$invoice_result = $invoice_stmt->fetchAll();
 				//print_r($invoice_result);exit;
@@ -80,16 +80,16 @@ if(!empty($data)){
 		$conn = getConnection();
 		
 		$invoice_id = $data['order_id'];
-		$usql = 'update order_payment_details set status = "FAILED",api_response="'.addslashes(json_encode($data)).'" where invoice_id="'.$invoice_id.'"';
+		$usql = 'update order_payment_details set status = ?,api_response=? where invoice_id=?';
 		$stmt = $conn->prepare($usql);
-		$stmt->execute();
+		$stmt->execute(["FAILED",addslashes(json_encode($data)),$invoice_id]);
 	}
 }
 function createBGOrder($invoiceId,$validation_id){
 	global $logger;
 	$conn = getConnection();
-	$stmt_order_payment = $conn->prepare("select * from order_payment_details where order_id='".$invoiceId."'");
-	$stmt_order_payment->execute();
+	$stmt_order_payment = $conn->prepare("select * from order_payment_details where order_id=?");
+	$stmt_order_payment->execute([$invoiceId]);
 	$stmt_order_payment->setFetchMode(PDO::FETCH_ASSOC);
 	$result_order_payment = $stmt_order_payment->fetchAll();
 	if (isset($result_order_payment[0])) {
@@ -100,8 +100,8 @@ function createBGOrder($invoiceId,$validation_id){
 		$json = utf8_encode($string);
 		$cartData = json_decode($json,true);
 		$items_total = 0;
-		$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$result_order_payment['email_id']."' and validation_id='".$result_order_payment['token_validation_id']."'");
-		$stmt->execute();
+		$stmt = $conn->prepare("select * from opennode_token_validation where email_id=? and validation_id=?");
+		$stmt->execute([$result_order_payment['email_id'],$result_order_payment['token_validation_id']]);
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
 		$result = $stmt->fetchAll();
 		//print_r($result[0]);exit;
@@ -247,9 +247,9 @@ function productOptions($acess_token,$store_hash,$email_id,$productId,$variantId
 	$res = curl_exec($ch);
 	curl_close($ch);
 	
-	$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values("'.$email_id.'","BigCommerce","Product Options","'.addslashes($url).'","","'.addslashes($res).'","'.$token_validation_id.'")';
-	//echo $log_sql;exit;
-	$conn->exec($log_sql);
+	$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values(?,?,?,?,?,?,?)';
+	$stmt= $conn->prepare($log_sql);
+	$stmt->execute([$email_id, "BigCommerce", "Product Options",addslashes($url),"",addslashes($res),$token_validation_id]);
 	if(!empty($res)){
 		$res = json_decode($res,true);
 		if(isset($res['data'])){
@@ -288,9 +288,9 @@ function deleteCart($acess_token,$store_hash,$email_id,$cart_id,$token_validatio
 	$res = curl_exec($ch);
 	curl_close($ch);
 	
-	$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values("'.$email_id.'","BigCommerce","Clear Cart","'.addslashes($url).'","'.addslashes($request).'","'.addslashes($res).'","'.$token_validation_id.'")';
-	
-	$conn->exec($log_sql);
+	$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values(?,?,?,?,?,?,?)';
+	$stmt= $conn->prepare($log_sql);
+	$stmt->execute([$email_id, "BigCommerce", "Clear Cart",addslashes($url),addslashes($request),addslashes($res),$token_validation_id]);
 
 	return $res;
 	
@@ -321,14 +321,16 @@ function createOrder($acess_token,$store_hash,$email_id,$request,$invoiceId,$tok
 	$res = curl_exec($ch);
 	curl_close($ch);
 	
-	$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values("'.$email_id.'","BigCommerce","Create Order","'.addslashes($url).'","'.addslashes($request).'","'.addslashes($res).'","'.$token_validation_id.'")';
-	$conn->exec($log_sql);
+	$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values(?,?,?,?,?,?,?)';
+	$stmt= $conn->prepare($log_sql);
+	$stmt->execute([$email_id, "BigCommerce", "Create Order",addslashes($url),addslashes($request),addslashes($res),$token_validation_id]);
 	
 	if(!empty($res)){
 		$res = json_decode($res,true);
 		if(isset($res['id'])){
-			$isql = "INSERT INTO `order_details` (`email_id`, `invoice_id`, `order_id`, `bg_customer_id`, `reponse_params`, `total_inc_tax`, `total_ex_tax`, `currecy`,token_validation_id) VALUES ('".$email_id."', '".$invoiceId."', '".$res['id']."', '".$res['customer_id']."', '".addslashes(json_encode($res))."', '".$res['total_inc_tax']."', '".$res['total_ex_tax']."', '".$res['currency_code']."','".$token_validation_id."')";
-			$conn->exec($isql);
+			$isql = "INSERT INTO `order_details` (`email_id`, `invoice_id`, `order_id`, `bg_customer_id`, `reponse_params`, `total_inc_tax`, `total_ex_tax`, `currecy`,token_validation_id) VALUES (?,?,?,?,?,?,?,?,?)";
+			$stmt= $conn->prepare($isql);
+			$stmt->execute([$email_id, $invoiceId, $res['id'],$res['customer_id'],addslashes(json_encode($res)),$res['total_inc_tax'],$res['total_ex_tax'],$res['currency_code'],$token_validation_id]);
 
 			$bigComemrceOrderId = $res['id'];
 		}
@@ -358,9 +360,9 @@ function updateOrderStatus($bigComemrceOrderId,$acess_token,$store_hash,$email_i
 	$res_u = curl_exec($ch);
 	curl_close($ch);
 	
-	$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values("'.$email_id.'","BigCommerce","Update Order","'.addslashes($url_u).'","'.addslashes($request_u).'","'.addslashes($res_u).'","'.$token_validation_id.'")';
-	
-	$conn->exec($log_sql);
+	$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values(?,?,?,?,?,?,?)';
+	$stmt= $conn->prepare($log_sql);
+	$stmt->execute([$email_id, "BigCommerce", "Update Order",addslashes($url_u),addslashes($request_u),addslashes($res_u),$token_validation_id]);
 
 	return $res_u;
 }
@@ -386,9 +388,9 @@ function updateOrderStatusRefund($bigComemrceOrderId,$acess_token,$store_hash,$e
 	$res_u = curl_exec($ch);
 	curl_close($ch);
 	
-	$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values("'.$email_id.'","BigCommerce","Update Order","'.addslashes($url_u).'","'.addslashes($request_u).'","'.addslashes($res_u).'","'.$token_validation_id.'")';
-	
-	$conn->exec($log_sql);
+	$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values(?,?,?,?,?,?,?)';
+	$stmt= $conn->prepare($log_sql);
+	$stmt->execute([$email_id, "BigCommerce", "Update Order",addslashes($url_u),addslashes($request_u),addslashes($res_u),$token_validation_id]);
 
 	return $res_u;
 }

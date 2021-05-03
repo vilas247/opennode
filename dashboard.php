@@ -18,8 +18,8 @@ $conn = getConnection();
 if(isset($_REQUEST['bc_email_id']) && isset($_REQUEST['key'])){
 	$email_id = $_REQUEST['bc_email_id'];
 	$validation_id = json_decode(base64_decode($_REQUEST['key']),true);
-	$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$email_id."' and validation_id='".$validation_id."'");
-	$stmt->execute();
+	$stmt = $conn->prepare("select * from opennode_token_validation where email_id=? and validation_id=?");
+	$stmt->execute([$email_id,$validation_id]);
 	$stmt->setFetchMode(PDO::FETCH_ASSOC);
 	$result = $stmt->fetchAll();
 	//print_r($result[0]);exit;
@@ -78,8 +78,8 @@ if(isset($_REQUEST['bc_email_id']) && isset($_REQUEST['key'])){
 					/* getting feed data from table */
 					$con = getConnection();
 					$email_id = @$_REQUEST['bc_email_id'];
-					$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$email_id."' and validation_id='".$validation_id."'");
-					$stmt->execute();
+					$stmt = $conn->prepare("select * from opennode_token_validation where email_id=? and validation_id=?");
+					$stmt->execute([$email_id,$validation_id]);
 					$stmt->setFetchMode(PDO::FETCH_ASSOC);
 					$result_token = $stmt->fetchAll();
 					
@@ -135,9 +135,9 @@ if(isset($_REQUEST['bc_email_id']) && isset($_REQUEST['key'])){
                         </thead>
                         <tbody>
 							<?php
-								$sql_res = "SELECT opd.api_response,opd.id,opd.settlement_status,opd.type,opd.amount_paid,opd.email_id as email,opd.order_id as invoice_id,od.order_id,opd.status,opd.currency,opd.total_amount,opd.created_date FROM order_payment_details opd LEFT JOIN order_details od ON opd.order_id = od.invoice_id WHERE opd.email_id='".$_REQUEST['bc_email_id']."' and opd.token_validation_id='".$validation_id."' order by opd.id desc LIMIT 0,15";
+								$sql_res = "SELECT opd.api_response,opd.id,opd.settlement_status,opd.type,opd.amount_paid,opd.email_id as email,opd.order_id as invoice_id,od.order_id,opd.status,opd.currency,opd.total_amount,opd.created_date FROM order_payment_details opd LEFT JOIN order_details od ON opd.order_id = od.invoice_id WHERE opd.email_id=? and opd.token_validation_id=? order by opd.id desc LIMIT 0,15";
 								$stmt_res = $conn->prepare($sql_res);
-								$stmt_res->execute();
+								$stmt_res->execute([$_REQUEST['bc_email_id'],$validation_id]);
 								$stmt_res->setFetchMode(PDO::FETCH_ASSOC);
 								$result_final = $stmt_res->fetchAll();
 								if(count($result_final) > 0){

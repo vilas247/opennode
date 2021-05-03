@@ -16,8 +16,8 @@ if(isset($_REQUEST['bc_email_id']) && isset($_REQUEST['key'])){
 	$key = @$_REQUEST['key'];
 	if(!empty($email_id) && !empty($key)){
 		$validation_id = json_decode(base64_decode($_REQUEST['key']),true);
-		$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$email_id."' and validation_id='".$validation_id."'");
-		$stmt->execute();
+		$stmt = $conn->prepare("select * from opennode_token_validation where email_id=? and validation_id=?");
+		$stmt->execute([$email_id,$validation_id]);
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
 		$result = $stmt->fetchAll();
 		//print_r($result[0]);exit;
@@ -28,10 +28,10 @@ if(isset($_REQUEST['bc_email_id']) && isset($_REQUEST['key'])){
 				$acess_token = $result['acess_token'];
 				$store_hash = $result['store_hash'];
 				deleteScripts($sellerdb,$acess_token,$store_hash,$email_id,$validation_id);
-				$usql = "update opennode_token_validation set is_enable=0 where email_id='".$_REQUEST['bc_email_id']."' and validation_id='".$validation_id."'";
+				$usql = "update opennode_token_validation set is_enable=0 where email_id=? and validation_id=?";
 				//echo $usql;exit;
 				$stmt = $conn->prepare($usql);
-				$stmt->execute();
+				$stmt->execute([$_REQUEST['bc_email_id'],$validation_id]);
 				header("Location:dashboard.php?bc_email_id=".@$_REQUEST['bc_email_id']."&key=".@$_REQUEST['key']."&disabled=1");
 			}else{
 				header("Location:index.php?bc_email_id=".@$_REQUEST['bc_email_id']."&key=".@$_REQUEST['key']);
@@ -49,8 +49,8 @@ if(isset($_REQUEST['bc_email_id']) && isset($_REQUEST['key'])){
 function deleteScripts($sellerdb,$acess_token,$store_hash,$email_id,$validation_id){
 	$rStatus = 0;
 	$conn = getConnection();
-	$stmt = $conn->prepare("select * from opennode_scripts where script_email_id='".$email_id."' and token_validation_id='".$validation_id."'");
-	$stmt->execute();
+	$stmt = $conn->prepare("select * from opennode_scripts where script_email_id=? and token_validation_id=?");
+	$stmt->execute([$email_id,$validation_id]);
 	$stmt->setFetchMode(PDO::FETCH_ASSOC);
 	$result = $stmt->fetchAll();
 	//print_r($result[0]);exit;
@@ -77,9 +77,9 @@ function deleteScripts($sellerdb,$acess_token,$store_hash,$email_id,$validation_
 			$res = curl_exec($ch);
 			//print_r($res);exit;
 			curl_close($ch);
-			$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values("'.$email_id.'","BigCommerce","script_tag_deletion","'.addslashes($url).'","'.addslashes($request).'","'.addslashes($res).'","'.$validation_id.'")';
-			//echo $log_sql;exit;
-			$conn->exec($log_sql);
+			$log_sql = 'insert into api_log(email_id,type,action,api_url,api_request,api_response,token_validation_id) values(?,?,?,?,?,?,?)';
+			$stmt= $conn->prepare($log_sql);
+			$stmt->execute([$email_id, "BigCommerce", "script_tag_injection",addslashes($url),addslashes($request),addslashes($res),$validation_id]);
 			if(empty($res)){
 				$sql = 'delete from opennode_scripts where script_id='.$v['script_id'];
 				//echo $sql;exit;

@@ -19,8 +19,8 @@ $conn = getConnection();
 if(isset($_REQUEST['bc_email_id']) && isset($_REQUEST['key'])){
 	$email_id = $_REQUEST['bc_email_id'];
 	$validation_id = json_decode(base64_decode($_REQUEST['key']),true);
-	$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$email_id."' and validation_id='".$validation_id."'");
-	$stmt->execute();
+	$stmt = $conn->prepare("select * from opennode_token_validation where email_id=? and validation_id=?");
+	$stmt->execute([$email_id,$validation_id]);
 	$stmt->setFetchMode(PDO::FETCH_ASSOC);
 	$result = $stmt->fetchAll();
 	if (isset($result[0])) {

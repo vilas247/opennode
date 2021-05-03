@@ -33,8 +33,8 @@ if(isset($_REQUEST['invoiceId'])){
 	$invoiceId = json_decode(base64_decode($_REQUEST['invoiceId']),true);
 	$conn = getConnection();
 	
-	$stmt_order_payment = $conn->prepare("select * from order_payment_details where order_id='".$invoiceId."'");
-	$stmt_order_payment->execute();
+	$stmt_order_payment = $conn->prepare("select * from order_payment_details where order_id=?");
+	$stmt_order_payment->execute([$invoiceId]);
 	$stmt_order_payment->setFetchMode(PDO::FETCH_ASSOC);
 	$result_order_payment = $stmt_order_payment->fetchAll();
 	if (isset($result_order_payment[0])) {
@@ -44,8 +44,8 @@ if(isset($_REQUEST['invoiceId'])){
 		$string = preg_replace("/[\r\n]+/", " ", $string);
 		$json = utf8_encode($string);
 		$cartData = json_decode($json,true);
-		$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$result_order_payment['email_id']."' and validation_id='".$result_order_payment['token_validation_id']."'");
-		$stmt->execute();
+		$stmt = $conn->prepare("select * from opennode_token_validation where email_id=? and validation_id=?");
+		$stmt->execute([$result_order_payment['email_id'],$result_order_payment['token_validation_id']]);
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
 		$result = $stmt->fetchAll();
 		//print_r($result[0]);exit;

@@ -16,14 +16,14 @@ if(isset($_REQUEST['authKey'])){
 	$conn = getConnection();
 	$invoiceId = json_decode(base64_decode($_REQUEST['authKey']),true);
 	if($invoiceId != ""){
-		$stmt_order_payment = $conn->prepare("select * from order_details where invoice_id='".$invoiceId."'");
-		$stmt_order_payment->execute();
+		$stmt_order_payment = $conn->prepare("select * from order_details where invoice_id=?");
+		$stmt_order_payment->execute([$invoiceId]);
 		$stmt_order_payment->setFetchMode(PDO::FETCH_ASSOC);
 		$result_order_payment = $stmt_order_payment->fetchAll();
 		if (isset($result_order_payment[0])) {
 			$result_order_payment = $result_order_payment[0];
-			$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$result_order_payment['email_id']."' and validation_id='".$result_order_payment['token_validation_id']."'");
-			$stmt->execute();
+			$stmt = $conn->prepare("select * from opennode_token_validation where email_id=? and validation_id=?");
+			$stmt->execute([$result_order_payment['email_id'],$result_order_payment['token_validation_id']]);
 			$stmt->setFetchMode(PDO::FETCH_ASSOC);
 			$result = $stmt->fetchAll();
 			//print_r($result[0]);exit;

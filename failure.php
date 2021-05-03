@@ -22,8 +22,8 @@ if(isset($_REQUEST['authKey'])){
 	$invoice_id = $tokenData['invoice_id'];
 	if(filter_var($email_id, FILTER_VALIDATE_EMAIL)) {
 		$conn = getConnection();
-		$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$email_id."'");
-		$stmt->execute();
+		$stmt = $conn->prepare("select * from opennode_token_validation where email_id=?");
+		$stmt->execute([$email_id]);
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
 		$result = $stmt->fetchAll();
 		if(isset($result[0])) {

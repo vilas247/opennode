@@ -15,14 +15,14 @@ if(isset($_REQUEST['container_id'])){
 	$key = @$_REQUEST['key'];
 	if(!empty($email_id) && !empty($key)){
 		$validation_id = json_decode(base64_decode($_REQUEST['key']),true);
-		$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$email_id."' and validation_id='".$validation_id."'");
-		$stmt->execute();
+		$stmt = $conn->prepare("select * from opennode_token_validation where email_id=? and validation_id=?");
+		$stmt->execute([$email_id,$validation_id]);
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
 		$result = $stmt->fetchAll();
 		
 		if (count($result) > 0) {
-			$stmt_c = $conn->prepare("select * from custom_opennodepay_button where email_id='".$email_id."' and token_validation_id='".$validation_id."'");
-			$stmt_c->execute();
+			$stmt_c = $conn->prepare("select * from custom_opennodepay_button where email_id=? and token_validation_id=?");
+			$stmt_c->execute([$email_id,$validation_id]);
 			$stmt_c->setFetchMode(PDO::FETCH_ASSOC);
 			$result_c = $stmt_c->fetchAll();
 			$enable = 0;
@@ -39,13 +39,15 @@ if(isset($_REQUEST['container_id'])){
 					$target_dir = "uploads/";
 					$target_file = $target_dir."opennode-".time().".".$ext;
 					if (move_uploaded_file($_FILES["image_url"]["tmp_name"], $target_file)) {
-						$iusql = 'update custom_opennodepay_button set image_url="'.$target_file.'" where email_id="'.$email_id.'" and token_validation_id="'.$validation_id.'"';
-						$conn->exec($iusql);
+						$iusql = 'update custom_opennodepay_button set image_url=? where email_id=? and token_validation_id=?';
+						$stmt= $conn->prepare($iusql);
+						$stmt->execute([$target_file, $email_id, $validation_id]);
 					}
 				}
-				$usql = 'update custom_opennodepay_button set container_id="'.$_REQUEST['container_id'].'",css_prop="'.$_REQUEST['css_prop'].'",html_code="'.htmlentities($_REQUEST['html_code']).'",is_enabled="'.$enable.'",is_image_enabled="'.$is_image_enabled.'" where email_id="'.$email_id.'" and token_validation_id="'.$validation_id.'"';
+				$usql = 'update custom_opennodepay_button set container_id=?,css_prop=?,html_code=?,is_enabled=?,is_image_enabled=? where email_id=? and token_validation_id=?';
 				// execute the query
-				$conn->exec($usql);
+				$stmt= $conn->prepare($usql);
+				$stmt->execute([$_REQUEST['container_id'],$_REQUEST['css_prop'],htmlentities($_REQUEST['html_code']),$enable,$is_image_enabled,$email_id,$validation_id]);
 				$sellerdb = $result[0]['sellerdb'];
 				alterFile($sellerdb,$email_id,$validation_id);
 			}else{
@@ -59,10 +61,10 @@ if(isset($_REQUEST['container_id'])){
 						$image_url = $target_file;
 					}
 				}
-				$isql = 'insert into custom_opennodepay_button(email_id,container_id,css_prop,is_enabled,image_url,is_image_enabled,token_validation_id,html_code) values("'.$email_id.'","'.$_REQUEST['container_id'].'","'.$_REQUEST['css_prop'].'","'.$enable.'","'.$target_file.'","'.$is_image_enabled.'","'.$validation_id.'","'.htmlentities($_REQUEST['html_code']).'")';
+				$isql = 'insert into custom_opennodepay_button(email_id,container_id,css_prop,is_enabled,image_url,is_image_enabled,token_validation_id,html_code) values(?,?,?,?,?,?,?)';
 				$stmt_i = $conn->prepare($isql);
 				// execute the query
-				$stmt_i->execute();
+				$stmt_i->execute([$email_id, $_REQUEST['container_id'], $enable,$target_file,$is_image_enabled,$validation_id,htmlentities($_REQUEST['html_code'])]);
 				$sellerdb = $result[0]['sellerdb'];
 				alterFile($sellerdb,$email_id,$validation_id);
 			}
@@ -117,8 +119,8 @@ function alterFile($sellerdb,$email_id,$validation_id){
 	if(!empty($sellerdb)){
 		$folderPath = './'.$sellerdb;
 		
-		$stmt_c = $conn->prepare("select * from custom_opennodepay_button where email_id='".$email_id."' and token_validation_id='".$validation_id."'");
-		$stmt_c->execute();
+		$stmt_c = $conn->prepare("select * from custom_opennodepay_button where email_id=? and token_validation_id=?");
+		$stmt_c->execute([$email_id,$validation_id]);
 		$stmt_c->setFetchMode(PDO::FETCH_ASSOC);
 		$result_c = $stmt_c->fetchAll();
 		if (count($result_c) > 0) {

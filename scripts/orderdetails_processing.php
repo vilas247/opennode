@@ -62,28 +62,28 @@ if(isset($_REQUEST['email_id']) && isset($_REQUEST['key'])){
 	}
 	$recordsTotal = 0;
 	$recordsFiltered = 0;
-	$sql_count = "SELECT count(*) as totalCount FROM order_payment_details opd LEFT JOIN order_details od ON opd.order_id = od.invoice_id WHERE opd.email_id='".$email_id."' and opd.token_validation_id='".$validation_id."'";
+	$sql_count = "SELECT count(*) as totalCount FROM order_payment_details opd LEFT JOIN order_details od ON opd.order_id = od.invoice_id WHERE opd.email_id=? and opd.token_validation_id=?";
 	$stmt = $conn->prepare($sql_count);
-	$stmt->execute();
+	$stmt->execute([$email_id,$validation_id]);
 	$stmt->setFetchMode(PDO::FETCH_ASSOC);
 	$result = $stmt->fetchAll();
 	if (count($result) > 0) {
 		$result = $result[0];
 		$recordsTotal = $result['totalCount'];
 	}
-	$sql_val_filtered = "SELECT count(*) as totalCount FROM order_payment_details opd LEFT JOIN order_details od ON opd.order_id = od.invoice_id WHERE opd.email_id='".$email_id."' and opd.token_validation_id='".$validation_id."' ".$search_query;
+	$sql_val_filtered = "SELECT count(*) as totalCount FROM order_payment_details opd LEFT JOIN order_details od ON opd.order_id = od.invoice_id WHERE opd.email_id=? and opd.token_validation_id=? ".$search_query;
 	$stmt_filter = $conn->prepare($sql_val_filtered);
-	$stmt_filter->execute();
+	$stmt_filter->execute([$email_id,$validation_id]);
 	$stmt_filter->setFetchMode(PDO::FETCH_ASSOC);
 	$result_filter = $stmt_filter->fetchAll();
 	if (count($result_filter) > 0) {
 		$result_filter = $result_filter[0];
 		$recordsFiltered = $result_filter['totalCount'];
 	}
-	$sql_res = "SELECT opd.api_response,opd.id,opd.settlement_status,opd.type,opd.amount_paid,opd.email_id as email,opd.order_id as invoice_id,od.order_id,opd.status,opd.currency,opd.total_amount,opd.created_date FROM order_payment_details opd LEFT JOIN order_details od ON opd.order_id = od.invoice_id WHERE opd.email_id='".$email_id."' and opd.token_validation_id='".$validation_id."' ".$search_query." ".$orderby." LIMIT ".$offset.','.$limit;
+	$sql_res = "SELECT opd.api_response,opd.id,opd.settlement_status,opd.type,opd.amount_paid,opd.email_id as email,opd.order_id as invoice_id,od.order_id,opd.status,opd.currency,opd.total_amount,opd.created_date FROM order_payment_details opd LEFT JOIN order_details od ON opd.order_id = od.invoice_id WHERE opd.email_id=? and opd.token_validation_id=? ".$search_query." ".$orderby." LIMIT ".$offset.','.$limit;
 	//echo $sql_res;exit;
 	$stmt_res = $conn->prepare($sql_res);
-	$stmt_res->execute();
+	$stmt_res->execute([$email_id,$validation_id]);
 	$stmt_res->setFetchMode(PDO::FETCH_ASSOC);
 	$result_final = $stmt_res->fetchAll();
 	if(count($result_final) > 0){

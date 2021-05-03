@@ -18,8 +18,8 @@ if(isset($_REQUEST['api_auth_token'])){
 	$key = @$_REQUEST['key'];
 	if(!empty($email_id) && !empty($key)){
 		$validation_id = json_decode(base64_decode($_REQUEST['key']),true);
-		$stmt = $conn->prepare("select * from opennode_token_validation where email_id='".$email_id."' and validation_id='".$validation_id."'");
-		$stmt->execute();
+		$stmt = $conn->prepare("select * from opennode_token_validation where email_id=? and validation_id=?");
+		$stmt->execute([$email_id,$validation_id]);
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);
 		$result = $stmt->fetchAll();
 		//print_r($result[0]);exit;
@@ -28,10 +28,10 @@ if(isset($_REQUEST['api_auth_token'])){
 			if(!empty($_REQUEST['api_auth_token'])){
 				$sellerdb = $result['sellerdb'];
 				$data = createFolder($sellerdb,$email_id,$validation_id);
-				$sql = 'update opennode_token_validation set api_auth_token="'.$_REQUEST['api_auth_token'].'" where email_id="'.$email_id.'" and validation_id="'.$validation_id.'"';
+				$sql = 'update opennode_token_validation set api_auth_token=? where email_id=? and validation_id=?';
 				//echo $sql;exit;
 				$stmt = $conn->prepare($sql);
-				$stmt->execute();
+				$stmt->execute([$_REQUEST['api_auth_token'],$email_id,$validation_id]);
 				header("Location:dashboard.php?bc_email_id=".@$_REQUEST['bc_email_id']."&key=".@$_REQUEST['key']);
 			}else{
 				header("Location:index.php?error=1&bc_email_id=".@$_REQUEST['bc_email_id']."&key=".@$_REQUEST['key']);
