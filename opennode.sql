@@ -92,7 +92,7 @@ CREATE TABLE `opennode_scripts` (
 CREATE TABLE `opennode_token_validation` (
   `validation_id` int(11) NOT NULL,
   `email_id` varchar(255) NOT NULL,
-  `api_auth_token` varchar(255) NOT NULL,
+  `api_auth_token` varchar(255) DEFAULT NULL,
   `sellerdb` varchar(255) NOT NULL,
   `acess_token` varchar(255) DEFAULT NULL,
   `store_hash` varchar(255) DEFAULT NULL,

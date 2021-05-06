@@ -10,6 +10,7 @@ define('APP_CLIENT_SECRET','51dfe773b6080390ef076cb31b2ec3df17e4602ea9bd405ab81b
 define('STORE_URL','https://api.bigcommerce.com/stores/');
 
 define('OPENNODE_CHECKOUT_URL','https://dev-checkout.opennode.com/');
+define('ENVIRONMENT','dev'); // dev OR live
 
 define('JS_SDK','https://code.jquery.com/jquery-3.5.1.js');
 ?>
