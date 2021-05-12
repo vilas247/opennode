@@ -109,7 +109,7 @@ function storeTokenData($response){
 			$sellerdb = '247c'.strtotime(date('y-m-d h:m:s'));
 			$sql = 'insert into opennode_token_validation(email_id,sellerdb,acess_token,store_hash) values(?,?,?,?)';
 			$stmt= $conn->prepare($sql);
-			$conn->execute([$email,$sellerdb,$access_token,$store_hash]);
+			$stmt->execute([$email,$sellerdb,$access_token,$store_hash]);
 			$last_id = $conn->lastInsertId();
 			createCustomPage($email,$store_hash,$access_token,$last_id);
 			//createWebhooks($email,$store_hash,$access_token,$last_id);
