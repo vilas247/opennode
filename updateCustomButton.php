@@ -34,41 +34,21 @@ if(isset($_REQUEST['container_id'])){
 				$is_image_enabled = 1;
 			}
 			if (count($result_c) > 0) {
-				if ($_FILES['image_url']['name'] != "" && $_FILES['image_url']['error'] == 0 && $_FILES['image_url']['size'] > 0) {
-					$ext = pathinfo($_FILES ['image_url'] ['name'], PATHINFO_EXTENSION);
-					$target_dir = "uploads/";
-					$target_file = $target_dir."opennode-".time().".".$ext;
-					if (move_uploaded_file($_FILES["image_url"]["tmp_name"], $target_file)) {
-						$iusql = 'update custom_opennodepay_button set image_url=? where email_id=? and token_validation_id=?';
-						$stmt= $conn->prepare($iusql);
-						$stmt->execute([$target_file, $email_id, $validation_id]);
-					}
-				}
-				$usql = 'update custom_opennodepay_button set container_id=?,css_prop=?,html_code=?,is_enabled=?,is_image_enabled=? where email_id=? and token_validation_id=?';
+				$usql = 'update custom_opennodepay_button set container_id=?,css_prop=?,html_code=? where email_id=? and token_validation_id=?';
 				// execute the query
 				$stmt= $conn->prepare($usql);
-				$stmt->execute([$_REQUEST['container_id'],$_REQUEST['css_prop'],htmlentities($_REQUEST['html_code']),$enable,$is_image_enabled,$email_id,$validation_id]);
+				$stmt->execute([$_REQUEST['container_id'],$_REQUEST['css_prop'],htmlentities($_REQUEST['html_code']),$email_id,$validation_id]);
 				$sellerdb = $result[0]['sellerdb'];
 				alterFile($sellerdb,$email_id,$validation_id);
 			}else{
-				$image_url = '';
-				if ($_FILES['image_url']['name'] != "" && $_FILES['image_url']['error'] == 0 && $_FILES['image_url']['size'] > 0) {
-					$ext = pathinfo($_FILES ['image_url'] ['name'], PATHINFO_EXTENSION);
-					$target_dir = "uploads/";
-					$fileName = 
-					$target_file = $target_dir."opennode-".time().".".$ext;
-					if (move_uploaded_file($_FILES["image_url"]["tmp_name"], $target_file)) {
-						$image_url = $target_file;
-					}
-				}
-				$isql = 'insert into custom_opennodepay_button(email_id,container_id,css_prop,is_enabled,image_url,is_image_enabled,token_validation_id,html_code) values(?,?,?,?,?,?,?)';
+				$isql = 'insert into custom_opennodepay_button(email_id,container_id,css_prop,token_validation_id,html_code) values(?,?,?,?,?)';
 				$stmt_i = $conn->prepare($isql);
 				// execute the query
-				$stmt_i->execute([$email_id, $_REQUEST['container_id'], $enable,$target_file,$is_image_enabled,$validation_id,htmlentities($_REQUEST['html_code'])]);
+				$stmt_i->execute([$email_id, $_REQUEST['container_id'], $_REQUEST['css_prop'],$validation_id,htmlentities($_REQUEST['html_code'])]);
 				$sellerdb = $result[0]['sellerdb'];
 				alterFile($sellerdb,$email_id,$validation_id);
 			}
-			header("Location:customButton.php?bc_email_id=".@$_REQUEST['bc_email_id']."&key=".@$_REQUEST['key']);
+			header("Location:customButton.php?bc_email_id=".@$_REQUEST['bc_email_id']."&key=".@$_REQUEST['key']."&updated=1");
 		}else{
 			header("Location:index.php?bc_email_id=".@$_REQUEST['bc_email_id']."&key=".@$_REQUEST['key']);
 		}

@@ -57,6 +57,7 @@ if(isset($_REQUEST['bc_email_id']) && isset($_REQUEST['key'])){
       <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
       <link rel="preconnect" href="https://fonts.gstatic.com">
       <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+	  <link rel="stylesheet" href="css/toaster/toaster.css">
       <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
       <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
       <!--[if lt IE 9]>
@@ -225,6 +226,7 @@ if(isset($_REQUEST['bc_email_id']) && isset($_REQUEST['key'])){
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
 		<script src="js/bootstrap.min.js"></script>
 		<script src="js/jtoggler.js"></script>
+		<script type="text/javascript" charset="utf8" src="js/toaster/jquery.toaster.js"></script>
 		<script>
 			$(document).ready(() => {
 				$('.jtoggler').jtoggler();
@@ -244,6 +246,27 @@ if(isset($_REQUEST['bc_email_id']) && isset($_REQUEST['key'])){
 				$('body #container_id').val(id);
 				$('body #css_prop').val(window.atob(css));
 				$('body #html_code').val(html_code);
+			});
+			var getUrlParameter = function getUrlParameter(sParam) {
+				var sPageURL = window.location.search.substring(1),
+					sURLVariables = sPageURL.split("&"),
+					sParameterName,
+					i;
+
+				for (i = 0; i < sURLVariables.length; i++) {
+					sParameterName = sURLVariables[i].split("=");
+
+					if (sParameterName[0] === sParam) {
+						return typeof sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+					}
+				}
+				return false;
+			};
+			$(document).ready(function(){
+				var updated = getUrlParameter('updated');
+				if(updated){
+					$.toaster({ priority : "success", title : "Success", message : "OPENNODE Custom buuton updated for your Store,Please wait for some time and check the changes" });
+				}
 			});
 		</script>
 	</body>
