@@ -98,7 +98,7 @@ if(isset($_REQUEST['email_id']) && isset($_REQUEST['key'])){
 							$inner_array[] = date("Y-m-d h:i A",strtotime($values[$dbv['val']]));
 						}else if($dbv['val'] == "api_response"){
 							$res_val = '';
-							$api_response = json_decode($values['api_response'],true);
+							$api_response = json_decode(str_replace("\\","",$values['api_response']),true);
 							if(isset($api_response['id'])){
 								$res_val = $api_response['id'];
 							}

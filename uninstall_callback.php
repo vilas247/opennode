@@ -31,23 +31,14 @@ function unInstallScripts($data){
 					try{
 						deleteScripts($result['sellerdb'],$result['acess_token'],$result['store_hash'],$email,$result['validation_id']);
 					}catch(Exception $e) {
-						$fp = fopen("deletescriptuninstall.txt", "w");
-					   fwrite($fp, $e->getMessage());
-					   fclose($fp);
 					}
 					try{
 						deleteCustomPage($result['sellerdb'],$result['acess_token'],$result['store_hash'],$email,$result['validation_id']);
 					}catch(Exception $e) {
-						$fp = fopen("deletecustomuninstall.txt", "w");
-					   fwrite($fp, $e->getMessage());
-					   fclose($fp);
 					}
 					try{
 						uninstallWebhooks($email,$result['store_hash'],$result['acess_token'],$result['validation_id']);
 					}catch(Exception $e) {
-						$fp = fopen("webhookuninstall.txt", "w");
-					   fwrite($fp, $e->getMessage());
-					   fclose($fp);
 					}
 					try{
 						$usql = "update opennode_token_validation set is_enable=?,api_auth_token=?,acess_token=? where email_id=? and store_hash=?";
@@ -55,9 +46,6 @@ function unInstallScripts($data){
 						$stmt = $conn->prepare($usql);
 						$stmt->execute(['0','','',$email,$result['store_hash']]);
 					}catch(Exception $e) {
-						$fp = fopen("updatevalidationuninstall.txt", "w");
-					   fwrite($fp, $e->getMessage());
-					   fclose($fp);
 					}
 				}
 			}

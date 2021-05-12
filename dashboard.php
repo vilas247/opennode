@@ -147,7 +147,7 @@ if(isset($_REQUEST['bc_email_id']) && isset($_REQUEST['key'])){
 										<td>
 											<?php
 												$res_val = '';
-												$api_response = json_decode($values['api_response'],true);
+												$api_response = json_decode(str_replace("\\","",$values['api_response']),true);
 												if(isset($api_response['id'])){
 													$res_val = $api_response['id'];
 												}

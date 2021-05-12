@@ -1,312 +1,273 @@
+--
+-- Drop table `247custompages`
+--
+DROP TABLE IF EXISTS `247custompages`;
 
 --
--- Table structure for table `247custompages`
+-- Drop table `247webhooks`
 --
-
-CREATE TABLE `247custompages` (
-  `id` int(11) NOT NULL,
-  `email_id` varchar(255) NOT NULL,
-  `token_validation_id` int(11) DEFAULT NULL,
-  `page_bc_id` varchar(255) NOT NULL,
-  `api_response` longtext NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
+DROP TABLE IF EXISTS `247webhooks`;
 
 --
--- Table structure for table `247webhooks`
+-- Drop table `api_log`
 --
+DROP TABLE IF EXISTS api_log;
 
+--
+-- Drop table `custom_opennodepay_button`
+--
+DROP TABLE IF EXISTS custom_opennodepay_button;
+
+--
+-- Drop table `opennode_scripts`
+--
+DROP TABLE IF EXISTS opennode_scripts;
+
+--
+-- Drop table `opennode_token_validation`
+--
+DROP TABLE IF EXISTS opennode_token_validation;
+
+--
+-- Drop table `order_details`
+--
+DROP TABLE IF EXISTS order_details;
+
+--
+-- Drop table `order_payment_details`
+--
+DROP TABLE IF EXISTS order_payment_details;
+
+--
+-- Drop table `order_refund`
+--
+DROP TABLE IF EXISTS order_refund;
+
+--
+-- Drop table `user`
+--
+DROP TABLE IF EXISTS user;
+
+--
+-- Drop table `webhook_log`
+--
+DROP TABLE IF EXISTS webhook_log;
+
+--
+-- Set default database
+--
+USE opennode;
+
+--
+-- Create table `webhook_log`
+--
+CREATE TABLE webhook_log (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  email_id VARCHAR(255) NOT NULL,
+  token_validation_id INT(11) DEFAULT NULL,
+  type VARCHAR(255) NOT NULL,
+  operation VARCHAR(255) NOT NULL,
+  api_response LONGTEXT NOT NULL,
+  cat_or_product_id VARCHAR(255) NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+--
+-- Create table `user`
+--
+CREATE TABLE user (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  email_id VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  user_type VARCHAR(50) NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+--
+-- Create table `order_refund`
+--
+CREATE TABLE order_refund (
+  r_id INT(11) NOT NULL AUTO_INCREMENT,
+  email_id VARCHAR(255) NOT NULL,
+  token_validation_id INT(11) DEFAULT NULL,
+  invoice_id VARCHAR(255) NOT NULL,
+  refund_status VARCHAR(255) NOT NULL,
+  refund_amount FLOAT NOT NULL,
+  api_request LONGTEXT DEFAULT NULL,
+  api_response LONGTEXT DEFAULT NULL,
+  order_comments VARCHAR(255) DEFAULT NULL,
+  created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (r_id)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+--
+-- Create table `order_payment_details`
+--
+CREATE TABLE order_payment_details (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  email_id VARCHAR(255) NOT NULL,
+  token_validation_id INT(11) DEFAULT NULL,
+  order_id VARCHAR(255) NOT NULL,
+  cart_id VARCHAR(255) NOT NULL,
+  type ENUM('SALE','AUTH') NOT NULL DEFAULT 'SALE',
+  total_amount FLOAT NOT NULL,
+  amount_paid FLOAT NOT NULL,
+  currency VARCHAR(10) NOT NULL,
+  status VARCHAR(255) NOT NULL DEFAULT 'PENDING',
+  settlement_status VARCHAR(255) NOT NULL DEFAULT 'PENDING',
+  params LONGTEXT DEFAULT NULL,
+  api_response LONGTEXT DEFAULT NULL,
+  settlement_response LONGTEXT DEFAULT NULL,
+  created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+--
+-- Create table `order_details`
+--
+CREATE TABLE order_details (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  email_id VARCHAR(255) NOT NULL,
+  token_validation_id INT(11) DEFAULT NULL,
+  invoice_id VARCHAR(255) NOT NULL,
+  order_id VARCHAR(255) NOT NULL,
+  bg_customer_id VARCHAR(255) NOT NULL,
+  reponse_params LONGTEXT NOT NULL,
+  total_inc_tax FLOAT NOT NULL,
+  total_ex_tax FLOAT NOT NULL,
+  currecy VARCHAR(20) NOT NULL,
+  is_cancelled INT(11) NOT NULL DEFAULT 0,
+  created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+--
+-- Create table `opennode_token_validation`
+--
+CREATE TABLE opennode_token_validation (
+  validation_id INT(11) NOT NULL AUTO_INCREMENT,
+  email_id VARCHAR(255) NOT NULL,
+  api_auth_token VARCHAR(255) NOT NULL,
+  sellerdb VARCHAR(255) NOT NULL,
+  acess_token VARCHAR(255) DEFAULT NULL,
+  store_hash VARCHAR(255) DEFAULT NULL,
+  is_enable INT(11) NOT NULL DEFAULT 0,
+  payment_option ENUM('CFO','CFS') NOT NULL DEFAULT 'CFO',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (validation_id)
+)
+ENGINE = INNODB,
+CHARACTER SET latin1,
+COLLATE latin1_swedish_ci;
+
+--
+-- Create table `opennode_scripts`
+--
+CREATE TABLE opennode_scripts (
+  script_id INT(11) NOT NULL AUTO_INCREMENT,
+  token_validation_id INT(11) DEFAULT NULL,
+  script_email_id VARCHAR(255) NOT NULL,
+  script_filename VARCHAR(255) NOT NULL,
+  script_code VARCHAR(255) NOT NULL,
+  status INT(11) NOT NULL DEFAULT 0,
+  api_response LONGTEXT DEFAULT NULL,
+  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (script_id)
+)
+ENGINE = INNODB,
+CHARACTER SET latin1,
+COLLATE latin1_swedish_ci;
+
+--
+-- Create table `custom_opennodepay_button`
+--
+CREATE TABLE custom_opennodepay_button (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  email_id VARCHAR(255) NOT NULL,
+  token_validation_id INT(11) DEFAULT NULL,
+  container_id VARCHAR(255) NOT NULL,
+  css_prop LONGTEXT NOT NULL,
+  html_code LONGTEXT DEFAULT NULL,
+  image_url VARCHAR(255) DEFAULT NULL,
+  is_image_enabled INT(11) NOT NULL DEFAULT 0,
+  is_enabled INT(11) NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
+
+--
+-- Create table `api_log`
+--
+CREATE TABLE api_log (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  email_id VARCHAR(255) NOT NULL,
+  token_validation_id INT(11) DEFAULT NULL,
+  type VARCHAR(255) NOT NULL,
+  action VARCHAR(255) NOT NULL,
+  api_url VARCHAR(255) NOT NULL,
+  api_request LONGTEXT DEFAULT NULL,
+  api_response LONGTEXT DEFAULT NULL,
+  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+AUTO_INCREMENT = 2,
+AVG_ROW_LENGTH = 16384,
+CHARACTER SET latin1,
+COLLATE latin1_swedish_ci;
+
+--
+-- Create table `247webhooks`
+--
 CREATE TABLE `247webhooks` (
-  `id` int(11) NOT NULL,
-  `email_id` varchar(255) NOT NULL,
-  `token_validation_id` int(11) DEFAULT NULL,
-  `webhook_bc_id` varchar(255) NOT NULL,
-  `scope` varchar(255) NOT NULL,
-  `destination` text NOT NULL,
-  `api_response` longtext NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `api_log`
---
-
-CREATE TABLE `api_log` (
-  `id` int(11) NOT NULL,
-  `email_id` varchar(255) NOT NULL,
-  `token_validation_id` int(11) DEFAULT NULL,
-  `type` varchar(255) NOT NULL,
-  `action` varchar(255) NOT NULL,
-  `api_url` varchar(255) NOT NULL,
-  `api_request` longtext DEFAULT NULL,
-  `api_response` longtext DEFAULT NULL,
-  `createdAt` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  email_id VARCHAR(255) NOT NULL,
+  token_validation_id INT(11) DEFAULT NULL,
+  webhook_bc_id VARCHAR(255) NOT NULL,
+  scope VARCHAR(255) NOT NULL,
+  destination TEXT NOT NULL,
+  api_response LONGTEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
 
 --
--- Table structure for table `custom_opennodepay_button`
+-- Create table `247custompages`
 --
+CREATE TABLE `247custompages` (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  email_id VARCHAR(255) NOT NULL,
+  token_validation_id INT(11) DEFAULT NULL,
+  page_bc_id VARCHAR(255) NOT NULL,
+  api_response LONGTEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_general_ci;
 
-CREATE TABLE `custom_opennodepay_button` (
-  `id` int(11) NOT NULL,
-  `email_id` varchar(255) NOT NULL,
-  `token_validation_id` int(11) DEFAULT NULL,
-  `container_id` varchar(255) NOT NULL,
-  `css_prop` longtext NOT NULL,
-  `html_code` longtext DEFAULT NULL,
-  `image_url` varchar(255) DEFAULT NULL,
-  `is_image_enabled` int(11) NOT NULL DEFAULT 0,
-  `is_enabled` int(11) NOT NULL DEFAULT 0,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `opennode_scripts`
---
-
-CREATE TABLE `opennode_scripts` (
-  `script_id` int(11) NOT NULL,
-  `token_validation_id` int(11) DEFAULT NULL,
-  `script_email_id` varchar(255) NOT NULL,
-  `script_filename` varchar(255) NOT NULL,
-  `script_code` varchar(255) NOT NULL,
-  `status` int(11) NOT NULL DEFAULT 0,
-  `api_response` longtext DEFAULT NULL,
-  `createdAt` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `opennode_token_validation`
---
-
-CREATE TABLE `opennode_token_validation` (
-  `validation_id` int(11) NOT NULL,
-  `email_id` varchar(255) NOT NULL,
-  `api_auth_token` varchar(255) DEFAULT NULL,
-  `sellerdb` varchar(255) NOT NULL,
-  `acess_token` varchar(255) DEFAULT NULL,
-  `store_hash` varchar(255) DEFAULT NULL,
-  `is_enable` int(11) NOT NULL DEFAULT 0,
-  `payment_option` enum('CFO','CFS') NOT NULL DEFAULT 'CFO',
-  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
-  `updated_at` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `order_details`
---
-
-CREATE TABLE `order_details` (
-  `id` int(11) NOT NULL,
-  `email_id` varchar(255) NOT NULL,
-  `token_validation_id` int(11) DEFAULT NULL,
-  `invoice_id` varchar(255) NOT NULL,
-  `order_id` varchar(255) NOT NULL,
-  `bg_customer_id` varchar(255) NOT NULL,
-  `reponse_params` longtext NOT NULL,
-  `total_inc_tax` float NOT NULL,
-  `total_ex_tax` float NOT NULL,
-  `currecy` varchar(20) NOT NULL,
-  `is_cancelled` int(11) NOT NULL DEFAULT 0,
-  `created_date` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `order_payment_details`
---
-
-CREATE TABLE `order_payment_details` (
-  `id` int(11) NOT NULL,
-  `email_id` varchar(255) NOT NULL,
-  `token_validation_id` int(11) DEFAULT NULL,
-  `order_id` varchar(255) NOT NULL,
-  `cart_id` varchar(255) NOT NULL,
-  `type` enum('SALE','AUTH') NOT NULL DEFAULT 'SALE',
-  `total_amount` float NOT NULL,
-  `amount_paid` float NOT NULL,
-  `currency` varchar(10) NOT NULL,
-  `status` varchar(255) NOT NULL DEFAULT 'PENDING',
-  `settlement_status` varchar(255) NOT NULL DEFAULT 'PENDING',
-  `params` longtext DEFAULT NULL,
-  `api_response` longtext DEFAULT NULL,
-  `settlement_response` longtext DEFAULT NULL,
-  `created_date` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `order_refund`
---
-
-CREATE TABLE `order_refund` (
-  `r_id` int(11) NOT NULL,
-  `email_id` varchar(255) NOT NULL,
-  `token_validation_id` int(11) DEFAULT NULL,
-  `invoice_id` varchar(255) NOT NULL,
-  `refund_status` varchar(255) NOT NULL,
-  `refund_amount` float NOT NULL,
-  `api_request` longtext DEFAULT NULL,
-  `api_response` longtext DEFAULT NULL,
-  `order_comments` varchar(255) DEFAULT NULL,
-  `created_date` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `webhook_log`
---
-
-CREATE TABLE `webhook_log` (
-  `id` int(11) NOT NULL,
-  `email_id` varchar(255) NOT NULL,
-  `token_validation_id` int(11) DEFAULT NULL,
-  `type` varchar(255) NOT NULL,
-  `operation` varchar(255) NOT NULL,
-  `api_response` longtext NOT NULL,
-  `cat_or_product_id` varchar(255) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `247custompages`
---
-ALTER TABLE `247custompages`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `247webhooks`
---
-ALTER TABLE `247webhooks`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `api_log`
---
-ALTER TABLE `api_log`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `custom_opennodepay_button`
---
-ALTER TABLE `custom_opennodepay_button`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `opennode_scripts`
---
-ALTER TABLE `opennode_scripts`
-  ADD PRIMARY KEY (`script_id`);
-
---
--- Indexes for table `opennode_token_validation`
---
-ALTER TABLE `opennode_token_validation`
-  ADD PRIMARY KEY (`validation_id`);
-
---
--- Indexes for table `order_details`
---
-ALTER TABLE `order_details`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `order_payment_details`
---
-ALTER TABLE `order_payment_details`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `order_refund`
---
-ALTER TABLE `order_refund`
-  ADD PRIMARY KEY (`r_id`);
-
---
--- Indexes for table `webhook_log`
---
-ALTER TABLE `webhook_log`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `247custompages`
---
-ALTER TABLE `247custompages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `247webhooks`
---
-ALTER TABLE `247webhooks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `api_log`
---
-ALTER TABLE `api_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `custom_opennodepay_button`
---
-ALTER TABLE `custom_opennodepay_button`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `opennode_scripts`
---
-ALTER TABLE `opennode_scripts`
-  MODIFY `script_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `opennode_token_validation`
---
-ALTER TABLE `opennode_token_validation`
-  MODIFY `validation_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `order_details`
---
-ALTER TABLE `order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `order_payment_details`
---
-ALTER TABLE `order_payment_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `order_refund`
---
-ALTER TABLE `order_refund`
-  MODIFY `r_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `webhook_log`
---
-ALTER TABLE `webhook_log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;

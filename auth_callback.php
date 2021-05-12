@@ -1,11 +1,7 @@
 <?php
    require_once('db-config.php');
    require_once('config.php');
-   ////$data = json_decode(file_get_contents('php://input'), true);
    $data = $_REQUEST;
-   $fp = fopen("auth.txt", "w");
-   fwrite($fp, serialize($data));
-   fclose($fp);
 
    $postData = array(
                     'client_id' => APP_CLIENT_ID,
@@ -18,8 +14,6 @@
                     );
 
     $post_fields = http_build_query($postData);
-    ////exit;
-    ////echo '<br />';
 
     $url = 'https://login.bigcommerce.com/oauth2/token';   
 
@@ -39,19 +33,11 @@
     if(!($data = curl_exec($ch))) {  
         echo "request-token > Request Curl Error: ".curl_error($ch);                       
     }       
-    else { 
-		$fp = fopen("authres.txt", "w");
-	   fwrite($fp, serialize($data));
-	   fclose($fp);
-        ////echo $data; 
+    else {
         $response = json_decode($data, true); 
-        
-        /*print '<pre />';
-        print_r($response);*/
 
         if(isset($response['access_token'])) {
 			storeTokenData($response);
-            /////echo "App installed successfully.";
         }
 
 		$data = $_REQUEST;

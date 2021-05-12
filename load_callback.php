@@ -4,11 +4,7 @@ if (!isset($_SESSION)) {
 }
 require_once('config.php');
 require_once('db-config.php');
-	////$data = json_decode(file_get_contents('php://input'), true);
 	$data = $_REQUEST;
-	$fp = fopen("load.txt", "w");
-	fwrite($fp, serialize($data));
-	fclose($fp);
 
 	$jsonData = verifySignedRequest($_GET['signed_payload']);
 	/*print '<pre />';
@@ -20,7 +16,7 @@ require_once('db-config.php');
 
 		// decode the data
 		$signature = base64_decode($encodedSignature);
-		    $jsonStr = base64_decode($encodedData);
+		$jsonStr = base64_decode($encodedData);
 		$data = json_decode($jsonStr, true);
 
 		// confirm the signature
