@@ -284,22 +284,12 @@ function opencodebillingAddressValdation(billingAddress){
 	}else{
 		errorCount++;
 	}
-	if(typeof(billingAddress.stateOrProvince) != "undefined" && billingAddress.stateOrProvince !== null && billingAddress.stateOrProvince !== "") {
-		
-	}else{
-		errorCount++;
-	}
 	if(typeof(billingAddress.postalCode) != "undefined" && billingAddress.postalCode !== null && billingAddress.postalCode !== "") {
 		
 	}else{
 		errorCount++;
 	}
 	if(typeof(billingAddress.country) != "undefined" && billingAddress.country !== null && billingAddress.country !== "") {
-		
-	}else{
-		errorCount++;
-	}
-	if(typeof(billingAddress.phone) != "undefined" && billingAddress.phone !== null && billingAddress.phone !== "") {
 		
 	}else{
 		errorCount++;
@@ -333,22 +323,12 @@ function opencodeshippingAddressValdation(shippingAddress){
 			}else{
 				errorCount++;
 			}
-			if(typeof(shippingAddress.stateOrProvince) != "undefined" && shippingAddress.stateOrProvince !== null && shippingAddress.stateOrProvince !== "") {
-				
-			}else{
-				errorCount++;
-			}
 			if(typeof(shippingAddress.postalCode) != "undefined" && shippingAddress.postalCode !== null && shippingAddress.postalCode !== "") {
 				
 			}else{
 				errorCount++;
 			}
 			if(typeof(shippingAddress.country) != "undefined" && shippingAddress.country !== null && shippingAddress.country !== "") {
-				
-			}else{
-				errorCount++;
-			}
-			if(typeof(shippingAddress.phone) != "undefined" && shippingAddress.phone !== null && shippingAddress.phone !== "") {
 				
 			}else{
 				errorCount++;
