@@ -199,8 +199,17 @@ function createBGOrder($invoiceId,$validation_id){
 			$createOrder['customer_message'] = $cartData['customer_message'];
 			$createOrder['total_ex_tax'] = $cartData['grand_total'];
 			$createOrder['total_inc_tax'] = $cartData['grand_total'];
+			$createOrder['geoip_country'] = $cart_shipping_address['country'];
+			$createOrder['geoip_country_iso2'] = $cart_shipping_address['country_code'];
+			//$createOrder['status_id'] = 11;
+			$createOrder['ip_address'] = get_client_ip();
+			if($checkShipping){
+				$createOrder['order_is_digital'] = true;
+			}
+			$createOrder['shipping_cost_ex_tax'] = $cartData['shipping_cost_total_ex_tax'];
+			$createOrder['shipping_cost_inc_tax'] = $cartData['shipping_cost_total_inc_tax'];
 			
-			$createOrder['payment_method'] = "custom";
+			$createOrder['payment_method'] = "OPENNODE PAYMENTS";
 			$createOrder['external_source'] = "247 OPENNODE";
 			$createOrder['default_currency_code'] = $cartData['cart']['currency']['code'];
 			
