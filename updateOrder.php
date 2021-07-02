@@ -183,7 +183,7 @@ function createBGOrder($invoiceId,$validation_id){
 											"country_iso2" => $cart_shipping_address['country_code'],
 											"phone" => $cart_shipping_address['phone'],
 											"email" => $cart_billing_address['email'],
-											"shipping_method" => $cart_shipping_options['type']
+											"shipping_method" => $cart_shipping_options['description']
 										);
 			}
 			$createOrder = array();
@@ -201,7 +201,7 @@ function createBGOrder($invoiceId,$validation_id){
 			$createOrder['total_inc_tax'] = $cartData['grand_total'];
 			$createOrder['geoip_country'] = $cart_shipping_address['country'];
 			$createOrder['geoip_country_iso2'] = $cart_shipping_address['country_code'];
-			//$createOrder['status_id'] = 11;
+			$createOrder['status_id'] = 0;
 			$createOrder['ip_address'] = get_client_ip();
 			if($checkShipping){
 				$createOrder['order_is_digital'] = true;
